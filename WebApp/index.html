@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>The Ever-Changing Gulf</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #ff61d5, #7e33ff);
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            height: 100vh;
+            max-height: 100vh;
+        }
+
+        #viewDiv {
+            height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            animation: pulseBorder 2s infinite;
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px #ff61d5;
+            animation: rainbow 3s linear infinite;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes pulseBorder {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 97, 213, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(126, 51, 255, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(255, 97, 213, 0.5);
+            }
+        }
+
+        @keyframes rainbow {
+            0% {
+                color: #ff61d5;
+            }
+
+            50% {
+                color: #7e33ff;
+            }
+
+            100% {
+                color: #ff61d5;
+            }
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .turn-it-up {
+            position: relative;
+            background: linear-gradient(to right, #ff61d5, #7e33ff);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            transform: rotate(-5deg);
+            animation: shake 0.5s infinite, glow 1s infinite;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        .volume-icon {
+            display: inline-block;
+            animation: grow 1s infinite;
+            margin: 0 5px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px #ff61d5; }
+            50% { box-shadow: 0 0 40px #7e33ff; }
+        }
+
+        @keyframes grow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+                height: auto;
+                min-height: 100vh;
+                padding: 10px;
+                gap: 10px;
+            }
+
+            #viewDiv {
+                height: 50vh;
+                min-height: 300px;
+            }
+
+            .info-panel {
+                height: auto;
+                max-height: 50vh;
+                overflow-y: auto;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin: 10px 0;
+            }
+
+            h2 {
+                font-size: 1.4em;
+                margin: 8px 0;
+            }
+
+            p {
+                font-size: 1em;
+                margin: 8px 0;
+            }
+
+            .turn-it-up {
+                font-size: 1.2em;
+                padding: 8px;
+                margin: 8px 0;
+            }
+        }
+
+        /* For very small screens */
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 5px;
+                gap: 5px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .turn-it-up {
+                font-size: 1em;
+            }
+
+            #viewDiv {
+                min-height: 250px;
+            }
+        }
+
+        /* Improve touch targets */
+        @media (hover: none) and (pointer: coarse) {
+            a {
+                padding: 8px;
+                display: inline-block;
+            }
+
+            .info-panel {
+                padding: 15px;
+            }
+        }
+
+        /* Prevent text from becoming too small */
+        @media screen and (max-width: 320px) {
+            body {
+                font-size: 14px;
+            }
+        }
+
+        /* Handle landscape mode on mobile */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            #viewDiv {
+                height: 100vh;
+            }
+
+            .info-panel {
+                height: 100vh;
+                max-height: 100vh;
+            }
+        }
+
+        /* Improve scrolling experience */
+        * {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Optional: Add smooth transitions for size changes */
+        #viewDiv, .info-panel, h1, h2, p {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="viewDiv"></div>
+        <div class="info-panel">
+            <h1>The Gulf of What???</h1>
+            <p class="blink">🌊 Watch as the Gulf changes its identity crisis! 🌊</p>
+            <div id="currentName"></div>
+            <hr>
+            <h2>What's happening?</h2>
+            <p>This map demonstrates a quirky feature where the Gulf of Mexico's label changes with each zoom level or
+                map load!</p>
+            <div class="turn-it-up">
+                <span class="volume-icon">🔊</span>
+                TURN IT UP!
+                <span class="volume-icon">🔊</span>
+                <br>
+                <small style="font-size: 0.6em;">(you won't regret it)</small>
+            </div>
+            <iframe id='music-player' width="100%" height="200" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" frameborder="0"
+                allowfullscreen></iframe>
+            <p>Learn more about this geographical identity crisis in our <a href="#" style="color: #ff61d5;">detailed
+                    blog post</a>!</p>
+        </div>
+    </div>
+
+    <script src="https://js.arcgis.com/4.31/"></script>
+    <script>
+        require([
+            "esri/WebMap",
+            "esri/views/MapView",
+            "esri/Graphic",
+            "esri/geometry/Circle",
+            "esri/symbols/SimpleLineSymbol",
+            "esri/geometry/Point"
+        ], function (WebMap, MapView, Graphic, Circle, SimpleLineSymbol, Point) {
+
+
+            let autoZoomInterval;
+            let userInteracted = false;
+            let center = [-90.428816825025, 25.049084846008];
+            
+            const webmap = new WebMap({
+                portalItem: {
+                    id: "cbb438a1392c4bd69e38a13735f35e96"
+                }
+            });
+
+            const view = new MapView({
+                container: "viewDiv",
+                map: webmap,
+                zoom: 3,
+                center: center
+            });
+
+            
+
+            function startAutoZoom() {
+                let zoomingOut = false;
+                autoZoomInterval = setInterval(() => {
+                    console.log("zoom");
+                    if (!userInteracted) {
+                        console.log(view.zoom);
+                        if (zoomingOut) {
+                            view.goTo({
+                                center: center,
+                                zoom: view.zoom - 1
+                            });
+                            if (view.zoom <= 3) zoomingOut = false;
+                        } else {
+                            view.goTo({
+                                center: center,
+                                zoom: view.zoom + 1
+                            });
+                            if (view.zoom >= 7) zoomingOut = true;
+                        }
+                    }
+                }, 2000);
+            }
+
+            let currentMapWidth;
+
+            // Modify the circle size calculation to be responsive
+            function getCircleWidthRatio() {
+                // Check if we're on mobile (you can adjust this breakpoint)
+                if (window.innerWidth <= 768) {
+                    return 0.3; // 30% of map width on mobile
+                }
+                return 0.1; // Original 10% on desktop
+            }
+
+            // Update your existing calculateCircleRadius function
+            function calculateCircleRadius() {
+                const extent = view.extent;
+                currentMapWidth = Math.abs(extent.xmax - extent.xmin);
+                return (currentMapWidth * getCircleWidthRatio()) / 2;
+            }
+
+            // Add window resize handler
+            window.addEventListener('resize', () => {
+                if (view) {
+                    const scribbledCircles = view.graphics.filter(g => g.geometry.type === 'circle');
+                    if (scribbledCircles.length > 0) {
+                        const newRadius = calculateCircleRadius();
+                        updateCircles(scribbledCircles, newRadius);
+                    }
+                }
+            });
+
+            // Create a "scribbled" circle effect using multiple offset circles
+            function createScribbledCircle() {
+                const circles = [];
+                const numberOfCircles = 5;
+
+                // Determine if we're on mobile
+                const isMobile = window.innerWidth <= 768;
+
+                for (let i = 0; i < numberOfCircles; i++) {
+                    const circle = new Circle({
+                        center: center,
+                        radius: calculateCircleRadius(),
+                        spatialReference: {wkid: 4326}
+                    });
+
+                    const graphic = new Graphic({
+                        geometry: circle,
+                        symbol: new SimpleLineSymbol({
+                            color: [255, 97, 213, 0.8],
+                            width: isMobile ? 4 : 3, // Slightly thicker lines on mobile
+                            style: "solid",
+                            cap: "round",
+                            join: "round"
+                        })
+                    });
+
+                    circles.push(graphic);
+                }
+
+                return circles;
+            }
+
+            view.when(() => {
+                // Add the scribbled circles to the view
+                const scribbledCircles = createScribbledCircle();
+                view.graphics.addMany(scribbledCircles);
+
+                // Update circles on zoom
+                view.watch('zoom', () => {
+                    const newRadius = calculateCircleRadius();
+                    updateCircles(scribbledCircles, newRadius);
+                });
+
+                // Animate the circles
+                let angle = 0;
+                setInterval(() => {
+                    const baseRadius = calculateCircleRadius();
+                    scribbledCircles.forEach((circle, index) => {
+                        const offset = Math.sin(angle + (index * 0.5)) * (baseRadius * 0.04); // Scale wobble with radius
+                        circle.geometry = new Circle({
+                            center: center,
+                            radius: baseRadius + offset,
+                            spatialReference: {wkid: 4326}
+                        });
+                    });
+                    angle += 0.1;
+                }, 50);
+
+
+                startAutoZoom();
+
+                // Stop auto-zoom on user interaction
+                view.on("drag", () => {
+                    userInteracted = true;
+                    clearInterval(autoZoomInterval);
+                });
+
+                view.on("mouse-wheel", () => {
+                    userInteracted = true;
+                    clearInterval(autoZoomInterval);
+                });
+
+                view.on("pointer-down", () => {
+                    userInteracted = true;
+                    clearInterval(autoZoomInterval);
+                });
+
+                view.on("touch-drag", () => {
+                    userInteracted = true;
+                    clearInterval(autoZoomInterval);
+                });
+
+            });
+
+            function updateCircles(circles, baseRadius) {
+                circles.forEach((circle, index) => {
+                    circle.geometry = new Circle({
+                        center: center,
+                        radius: baseRadius + (Math.random() * baseRadius * 0.05), // Scale random offset with radius
+                        spatialReference: {wkid: 4326}
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
