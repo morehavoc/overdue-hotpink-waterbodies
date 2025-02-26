@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "basemap_name_proxy": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7196",
+      "launchBrowser": false
+    }
+  }
+}

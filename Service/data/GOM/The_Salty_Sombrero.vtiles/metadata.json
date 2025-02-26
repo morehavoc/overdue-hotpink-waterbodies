@@ -1,0 +1,1 @@
+{"vector_layers":[{"id":"SpecialLabels","minzoom":0,"maxzoom":19,"fields":{"_name":"String"}}],"tilestats":{"layerCount":1,"layers":[{"layer":"SpecialLabels","count":1,"geometry":"Point","attributeCount":1,"attributes":[{"attribute":"_name","type":"string","count":1,"values":["The Salty Sombrero"]}]}]}}
